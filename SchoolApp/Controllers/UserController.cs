@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolApp.DTO;
+using SchoolApp.Exceptions;
 using SchoolApp.Services;
 using System.Security.Claims;
 
@@ -68,16 +69,16 @@ namespace SchoolApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View();
+                    return View(credentials);
                 }
 
                 var user = await applicationService.UserService.VerifyAndGetUserAsync(credentials);
 
-                if (user == null)
-                {
-                    ViewData["ValidateMessage"] = "Bad Credentials. Username or Password is invalid.";
-                    return View();
-                }
+                //if (user == null)
+                //{
+                //    ViewData["ValidateMessage"] = "Bad Credentials. Username or Password is invalid.";
+                //    return View();
+                //}
 
                 // Αυτά τα claims μπαίνουν μέσα στο authentication cookie
                 var claims = new List<Claim>
@@ -116,11 +117,17 @@ namespace SchoolApp.Controllers
                 logger.LogInformation("User {Username} logged in", principal.Identity?.Name);
                 return RedirectToAction("Index", "User");
             }
+            catch (EntityNotAuthorizedException ex)
+            {
+                logger.LogWarning(ex, "Unauthorized login attempt for username: {Username}", credentials.Username);
+                ViewData["ValidateMessage"] = "Bad Credentials. Username or password is invalid";
+                return View(credentials);
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error during login");
-                ViewData["ValidateMessage"] = "An unexpected error occurred.";
-                return View();
+                ViewData["ValidateMessage"] = ex.Message;
+                return View(credentials);
             }
         }
 
