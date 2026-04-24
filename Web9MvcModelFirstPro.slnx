@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".dockerignore" />
+    <File Path=".env" />
+    <File Path=".env.example" />
+    <File Path="docker-compose.yml" />
+    <File Path="Dockerfile" />
+  </Folder>
+  <Project Path="SchoolApp.Tests/SchoolApp.Tests.csproj" Id="5f8729ab-3c84-4e51-9fd8-3a32daff981c" />
+  <Project Path="SchoolApp/SchoolApp.csproj" />
+</Solution>
